@@ -1,5 +1,7 @@
--.swp
+*.swp
 *bak
 *-backups
 fp-*
 sym-lib-table
+*.pdf
+\#auto_saved_files\#

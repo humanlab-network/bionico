@@ -43,4 +43,9 @@
   (pad "S1" thru_hole oval (at -4 -1.43) (size 1.6 1.1) (drill oval 1.1 0.6) (layers *.Cu *.Mask) (tstamp 8659c80d-80a2-43b9-ad9c-32ad48891220))
   (pad "S1" thru_hole oval (at -4 1.43) (size 1.6 1.1) (drill oval 1.1 0.6) (layers *.Cu *.Mask) (tstamp 86ed86f4-0151-45c5-905f-b4a048144531))
   (pad "S1" thru_hole oval (at 4 -1.43) (size 1.6 1.1) (drill oval 1.1 0.6) (layers *.Cu *.Mask) (tstamp c8b9676b-221e-4cd7-863c-5d1cf75e0f5a))
+  (model "${KIPRJMOD}/bionico.pretty/USB4145-03-0070-C.stp"
+    (offset (xyz 0 -1.3 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz -90 0 0))
+  )
 )

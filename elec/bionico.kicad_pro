@@ -34,8 +34,8 @@
         "other_text_upright": false,
         "pads": {
           "drill": 0.0,
-          "height": 0.2,
-          "width": 1.2
+          "height": 3.3,
+          "width": 2.4
         },
         "silk_line_width": 0.15,
         "silk_text_italic": false,
@@ -435,6 +435,10 @@
     [
       "29ba5cb3-8244-4e9f-a028-bde92e99adb1",
       "Motor"
+    ],
+    [
+      "c11cc314-9e4d-42a0-b87a-803a7952a27d",
+      "Electrodes"
     ]
   ],
   "text_variables": {}
