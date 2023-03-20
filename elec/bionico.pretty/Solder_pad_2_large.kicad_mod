@@ -16,5 +16,7 @@
   )
   (fp_rect (start -2.25 -3.75) (end 2.25 3.75) (layer "F.CrtYd") (width 0.05) (fill none) (tstamp 511e15f5-5112-4988-a663-b4297ea6639f))
   (pad "1" smd oval (at 0 2.5) (size 4 2) (layers "F.Cu" "F.Mask") (tstamp 6c632cd4-fba5-4a0c-9a16-422e2dbd2390))
+  (pad "1" thru_hole circle (at -1 2.5) (size 2 2) (drill 1) (layers *.Cu *.Mask) (tstamp 79c43c6e-5851-465f-a5eb-a185798e5502))
+  (pad "2" thru_hole circle (at -1 -2.5) (size 2 2) (drill 1) (layers *.Cu *.Mask) (tstamp 283f0383-b944-4e16-95b2-180696b9935a))
   (pad "2" smd roundrect (at 0 -2.5) (size 4 2) (layers "F.Cu" "F.Mask") (roundrect_rratio 0.25) (tstamp 475fa895-90ea-41fe-98b8-90f2f4ab49f1))
 )
