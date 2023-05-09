@@ -1796,11 +1796,6 @@
     (uuid fc3ac903-5187-48e0-8171-e52a22dfc0dc)
   )
 
-  (text "TODO: Prévoir 2 NTC en série et recalculer pour 50°C max"
-    (at 177.8 168.91 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 005e0530-8f50-47ab-8637-85c9d70900a0)
-  )
   (text "R29 sets the maximum charge current.\nIcc = 12k / R29 A\n6k sets a maximum current of 2A\nMaximum current can be changed\nthrough I2C using REG01H from 500mA to 2A"
     (at 149.86 96.52 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
