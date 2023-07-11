@@ -22,6 +22,12 @@ target_link_libraries(mp2672 hardware_i2c)
 add_library(bq28z610-r1 bq28z610-r1.c)
 target_link_libraries(bq28z610-r1 hardware_i2c)
 
+add_library(motor motor.c)
+target_link_libraries(motor hardware_pwm hardware_gpio hardware_adc)
+
+add_library(electrodes electrodes.c)
+target_link_libraries(electrodes hardware_adc)
+
 add_executable(test_led test_led.c)
 target_link_libraries(test_led hardware_pwm pico_stdlib)
 pico_enable_stdio_usb(test_led 1)
@@ -36,3 +42,18 @@ add_executable(test_bq28z610-r1 test_bq28z610-r1.c)
 target_link_libraries(test_bq28z610-r1 bq28z610-r1 pico_stdlib)
 pico_enable_stdio_usb(test_bq28z610-r1 1)
 pico_add_extra_outputs(test_bq28z610-r1)
+
+add_executable(test_motor test_motor.c)
+target_link_libraries(test_motor motor pico_stdlib)
+pico_enable_stdio_usb(test_motor 1)
+pico_add_extra_outputs(test_motor)
+
+add_executable(test_electrodes test_electrodes.c)
+target_link_libraries(test_electrodes electrodes pico_stdlib)
+pico_enable_stdio_usb(test_electrodes 1)
+pico_add_extra_outputs(test_electrodes)
+
+add_executable(naive_control naive_control.c)
+target_link_libraries(naive_control motor electrodes pico_stdlib)
+pico_enable_stdio_usb(naive_control 1)
+pico_add_extra_outputs(naive_control)

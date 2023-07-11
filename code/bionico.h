@@ -1,5 +1,22 @@
-#ifndef _PLATFORM_H
-#define _PLATFORM_H
+#ifndef _BIONICO_H
+#define _BIONICO_H
+
+// --- GPIO ---
+#define EN1 18
+#define EN2 24
+#define IN1 19
+#define IN2 25
+
+// --- ADC ---
+#define VREF 3.3  // Volt
+#define CM1_GPIO 26
+#define CM1_CHANNEL 0
+#define CM2_GPIO 27
+#define CM2_CHANNEL 1
+#define EL1_GPIO 28 
+#define EL1_CHANNEL 2
+#define EL2_GPIO 29
+#define EL2_CHANNEL 3
 
 // --- LEDs ---
 // Mapping:
