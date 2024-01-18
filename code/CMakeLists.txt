@@ -28,6 +28,12 @@ target_link_libraries(motor hardware_pwm hardware_gpio hardware_adc)
 add_library(electrodes electrodes.c)
 target_link_libraries(electrodes hardware_adc)
 
+add_library(signal signal.c)
+target_link_libraries(signal)
+
+add_library(thermal_model thermal_model.c)
+target_link_libraries(thermal_model)
+
 add_executable(test_led test_led.c)
 target_link_libraries(test_led hardware_pwm pico_stdlib)
 pico_enable_stdio_usb(test_led 1)
@@ -57,3 +63,8 @@ add_executable(naive_control naive_control.c)
 target_link_libraries(naive_control motor electrodes pico_stdlib)
 pico_enable_stdio_usb(naive_control 1)
 pico_add_extra_outputs(naive_control)
+
+add_executable(proportionnal_control proportionnal_control.c)
+target_link_libraries(proportionnal_control motor electrodes signal thermal_model bq28z610-r1 pico_stdlib)
+pico_enable_stdio_usb(proportionnal_control 1)
+pico_add_extra_outputs(proportionnal_control)

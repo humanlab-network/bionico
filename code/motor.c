@@ -4,9 +4,6 @@
 #include "hardware/adc.h"
 #include "motor.h"
 
-#define MAX_PWM 100
-#define R 5100   // Ohm
-
 void motor_init()
 {
     // PWM configuration
@@ -38,13 +35,13 @@ void motor_set_command(int8_t pwm)
 
     // Saturate pwm
     pwm = abs(pwm);
-    if(pwm > MAX_PWM)
+    if (pwm > MAX_PWM)
         pwm = MAX_PWM;
 
     // Set direction pins
     gpio_put(IN1, dir ? 1 : 0);
     gpio_put(IN2, dir ? 0 : 1);
-    
+
     // Set PWM pins
     pwm_set_gpio_level(EN1, dir ? pwm : MAX_PWM);
     pwm_set_gpio_level(EN2, dir ? MAX_PWM : pwm);
