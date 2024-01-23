@@ -15,6 +15,7 @@
 #define CURRENT_MONITORING_ACTIVATED
 #define TEMP_SECURITY_ACTIVATED
 #define VOLTAGE_SECURITY_ACTIVATED
+#define USE_VIRTUAL_MOTOR_RESISTANCE
 
 // Measurements
 float emg_open_raw, emg_open_filtered = 0.0;
@@ -27,6 +28,7 @@ float current_ratio, current_ratio_filtered = 0.0;
 #define DIR_OPEN 1
 #define DIR_CLOSE -1
 float command, prev_command = 0.0;
+float cmd_emg_derivative_filtered = 0.0;
 uint8_t direction, prev_direction = DIR_OPEN;
 float motor_command = 0.0;
 
@@ -34,9 +36,7 @@ float motor_command = 0.0;
 enum
 {
     STATE_RUNNING = 0,
-    STATE_STALL_VALIDATION,
-    STATE_SHORT_CUTOUT,
-    STATE_LONG_CUTOUT
+    STATE_CUTOUT,
 };
 uint8_t state = STATE_RUNNING;
 uint16_t stall_timer = 0;
@@ -92,6 +92,7 @@ int main(void)
         prev_command = command;
         prev_direction = direction;
         command_from_emg();
+        first_order_filter(&cmd_emg_derivative_filtered, &command, CMD_EMG_ALPHA_FILTER);
 
         // ----- TEMPERATURE ESTIMATION ------
         prev_rotor_temp = rotor_temp;
@@ -105,7 +106,11 @@ int main(void)
         // noise) Division by 8 is supposed to be fast !
         if (motor_command > MAX_CMD / 8 && battery_voltage_highfreq_filtered > 0)
         {
+#ifdef USE_VIRTUAL_MOTOR_RESISTANCE
+            current_ratio = VIRTUAL_R_MOT * current_raw / (battery_voltage_highfreq_filtered * motor_command / MAX_CMD);
+#else
             current_ratio = R_MOT * current_raw / (battery_voltage_highfreq_filtered * motor_command / MAX_CMD);
+#endif
         }
         first_order_filter(&current_ratio_filtered, &current_ratio, CURRENT_RATIO_ALPHA_FILTER);
 
@@ -130,8 +135,15 @@ int main(void)
         }
 #endif
 
-        // ----- MOTOR CONTROL ------
+        // ----- USING VIRTUAL RESISTANCE TO LOWER STALL CURRENT -----
+#ifdef USE_VIRTUAL_MOTOR_RESISTANCE
+        float motor_command_corrected = motor_command - (VIRTUAL_R_MOT - R_MOT) * current_filtered / battery_voltage_highfreq_filtered * MAX_CMD;
+        int8_t pwm = (int8_t)((motor_command_corrected / MAX_CMD) * MAX_PWM) * direction;
+#else
         int8_t pwm = (int8_t)((motor_command / MAX_CMD) * MAX_PWM) * direction;
+#endif
+
+        // ----- MOTOR PWM WRITE ------
         motor_set_command(pwm);
 
         // ----- LOOP TIME MONITOR ------
@@ -203,46 +215,22 @@ void motor_state_machine(void)
     switch (state)
     {
     case STATE_RUNNING:
-        if ((current_ratio_filtered >= STALL_RATIO_THOLD &&
-             current_filtered > SAFE_CURRENT))
+        if (current_ratio_filtered >= STALL_RATIO_THOLD &&
+            current_filtered > SAFE_CURRENT &&
+            cmd_emg_derivative_filtered <= EMG_DERIVATIVE_THRESHOLD &&
+            command - motor_command < CMD_MAX_ACCEL_STEP / 2)
         {
-            state = STATE_STALL_VALIDATION;
-            // STALL VALIDATION ENTER
-            stall_validation_counter = 0; // Init stall_validation counter
+            state = STATE_CUTOUT;
+            // CUTOUT ENTER
+            stall_validation_counter = 0;       // Init stall_validation counter
+            last_stall_command = motor_command; // Save motor command when cutout
         }
         break;
 
-    case STATE_STALL_VALIDATION:
-        if ((current_ratio_filtered < STALL_RATIO_THOLD &&
-             stall_validation_counter < STALL_DETECTION_TIME))
-        {
-            state = STATE_RUNNING;
-            // RUNNING ENTER
-            // nothing to be done
-        }
-        else if ((stall_validation_counter >= STALL_DETECTION_TIME &&
-                  motor_command * current_ratio_filtered >= 0.95 * command))
-        {
-            state = STATE_SHORT_CUTOUT;
-            // SHORT CUTOUT ENTER
-
-            stall_timer = 0;                    // Init cutout counter
-            last_stall_command = motor_command; // Init cmd_stall, TO CHECK
-        }
-        break;
-
-    case STATE_SHORT_CUTOUT:
-        if (stall_timer >= STALL_TIMER_SHORT)
-        {
-            state = STATE_LONG_CUTOUT;
-            // LONG CUTOUT ENTER
-            // nothing to be done
-        }
-        break;
-
-    case STATE_LONG_CUTOUT:
-        if ((stall_timer >= STALL_TIMER_LONG || direction != prev_direction ||
-             command > STALL_CMD_MARGIN * last_stall_command))
+    case STATE_CUTOUT:
+        if (stall_timer >= STALL_TIMER_LONG ||
+            direction != prev_direction ||
+            command > STALL_CMD_MARGIN * last_stall_command)
         {
             state = STATE_RUNNING;
             // RUNNING ENTER
@@ -259,19 +247,8 @@ void motor_state_machine(void)
         // nothing to be done
         break;
 
-    case STATE_STALL_VALIDATION:
-        // STALL VALIDATION UPDATE
-        stall_validation_counter++; // Increment stall_validation counter
-        break;
-
-    case STATE_SHORT_CUTOUT:
+    case STATE_CUTOUT:
         // SHORT CUTOUT UPDATE
-        command = 0.0;
-        stall_timer++; // Increment cutout counter
-        break;
-
-    case STATE_LONG_CUTOUT:
-        // LONG CUTOUT UPDATE
         command = 0.0;
         stall_timer++; // Increment cutout counter
         break;

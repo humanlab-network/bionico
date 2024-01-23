@@ -31,6 +31,8 @@
 #define CURRENT_ALPHA_FILTER 0.25
 // [-], set the alpha coefficient for current ratio filter, with tau = 0.03sec
 #define CURRENT_RATIO_ALPHA_FILTER 0.25
+// [-], set the alpha coefficient for command emg filter, with tau = 0.09sec
+#define CMD_EMG_ALPHA_FILTER 0.1
 
 /* --- COMMAND SIGNAL CONFIGURATION--- */
 // [cmd_unit] maximum Command possible
@@ -48,9 +50,9 @@
 // [-] Stall ratio threshold to consider motor as quasi stalled
 #define STALL_RATIO_THOLD 0.85
 // [-] Command percentage to consider that user did not released muscles after a stall state of motor
-#define STALL_CMD_MARGIN 1.1
-// [period] Time to apply stall torque
-#define STALL_DETECTION_TIME 5
+#define STALL_CMD_MARGIN 1.05
+//
+#define EMG_DERIVATIVE_THRESHOLD 0.01
 // [period] Time to stay in "Long stall mode"
 #define STALL_TIMER_LONG 75
 // [period] Time to stay in "Short stall mode"
@@ -66,22 +68,26 @@
 
 /* --- MOTOR GLOBAL CHARACTERISTICS --- */
 // [Ohm], Motor resistance
-#define R_MOT 0.65
+#define R_MOT 1.94
 // [A], Maximum continuous current of motor
 #define SAFE_CURRENT 1.50
+// [A], Maximum stall current specified if virtual resistance is used
+#define VIRTUAL_STALL_CURRENT 2.50
+// [Ohm], Corresponding virtual resistance at voltage of 7.8V
+#define VIRTUAL_R_MOT (7.8 / VIRTUAL_STALL_CURRENT)
 // [A], Minimum voltage of battery authorized to protect the battery
 #define MIN_VOLTAGE 7.0
 
 /* --- MOTOR THERMAL MODEL --- */
 // [°C], Estimation of outside temperature
-#define T_EXT 20.0
+#define T_EXT 25.0
 // [°C/W] Thermal resistance between rotor and stator
-#define RTH_ROT 6.0
+#define RTH_ROT 5.0
 // [s] Thermal time constant of the rotor
-#define TAU_ROT 9.0
+#define TAU_ROT 6.8
 // [°C/W] Thermal resistance between stator and the exterior
-#define RTH_ST 7.0
+#define RTH_ST 8.0 // 20.0 if motor is alone
 // [s] Thermal time constant of the rotor
-#define TAU_ST 750.0
+#define TAU_ST 1200.0 // 440.0 is motor is alone
 
 #endif
