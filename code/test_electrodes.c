@@ -44,8 +44,8 @@ int main(void)
     {
         get_electrodes_stat(&mu1, &mu2, &sigma1, &sigma2);
 
-        signal1 = ALPHA * signal1 + (1 - ALPHA) * sigma1;
-        signal2 = ALPHA * signal2 + (1 - ALPHA) * sigma2;
+        signal1 = ALPHA * signal1 + (1 - ALPHA) * mu1;
+        signal2 = ALPHA * signal2 + (1 - ALPHA) * mu2;
         
         printf("%f %f\n", signal1, signal2);
     }

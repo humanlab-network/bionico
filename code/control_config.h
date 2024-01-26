@@ -11,18 +11,18 @@
 // [V], Dead zone to filter noise : EMG signals under limit go to zero
 #define EMG_CLOSE_MIN_VALUE 0.2
 // [V], set the max value that EMG reach to scale command on it
-#define EMG_CLOSE_MAX_VALUE 3.3
+#define EMG_CLOSE_MAX_VALUE 2.0
 
 /* --- EMG OPEN CONFIGURATION--- */
 // [V], Dead zone to filter noise : EMG signals under limit go to zero
 #define EMG_OPEN_MIN_VALUE 0.2
 // [V], set the max value that EMG reach to scale command on it
-#define EMG_OPEN_MAX_VALUE 3.3
+#define EMG_OPEN_MAX_VALUE 2.0
 
 /* --- FILTERING--- */
 // Using lowpass 1st order filter : alpha = dt / (tau + dt)
 // [-], set the alpha coefficient for emg filter, with tau = 0.09sec
-#define EMG_ALPHA_FILTER 0.1
+#define EMG_ALPHA_FILTER 0.2
 // [-], set the alpha coefficient for battery high frequency filter, with tau = 0.03sec
 #define VOLTAGE_ALPHA_HIGHFREQ_FILTER 0.25
 // [-], set the alpha coefficient for battery low frequency filter, with tau = 30sec
@@ -38,9 +38,9 @@
 // [cmd_unit] maximum Command possible
 #define MAX_CMD 100.0
 // [cmd_unit], Command scale if needed (max = MAX_CMD)
-#define SPEED_LIMIT_FLOAT (0.5 * MAX_CMD)
+#define SPEED_LIMIT_FLOAT (1.0 * MAX_CMD)
 // [cmd_unit], Command scale if needed (max = MAX_CMD)
-#define EMG_SCALE_FLOAT 2.0
+#define EMG_SCALE_FLOAT 1.0
 
 /* --- CONTROL ALGORITHM CONFIGURATION--- */
 // [cmd_unit] Maximum acceleration of command (exprimed by a delta between 2 cmd)
@@ -77,6 +77,8 @@
 #define VIRTUAL_R_MOT (7.8 / VIRTUAL_STALL_CURRENT)
 // [A], Minimum voltage of battery authorized to protect the battery
 #define MIN_VOLTAGE 7.0
+// [Ah], Full capacity of the battery
+#define BATTERY_FULL_CAPACITY 3.0
 
 /* --- MOTOR THERMAL MODEL --- */
 // [°C], Estimation of outside temperature
@@ -86,8 +88,13 @@
 // [s] Thermal time constant of the rotor
 #define TAU_ROT 6.8
 // [°C/W] Thermal resistance between stator and the exterior
-#define RTH_ST 8.0 // 20.0 if motor is alone
+#define RTH_ST 15.0 // 20.0 if motor is alone
 // [s] Thermal time constant of the rotor
-#define TAU_ST 1200.0 // 440.0 is motor is alone
+#define TAU_ST 800.0 // 440.0 is motor is alone
+
+/* --- LED SETTINGS --- */
+#define LED_OFF_PWM 100
+#define LED_ON_PWM_GREEN 90
+#define LED_ON_PWM_RED 95
 
 #endif
