@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "hardware/i2c.h"
+#include "mp2672.h"
 
 #define MP2672_ADDR 0x4B
 
@@ -28,9 +29,33 @@ static void mp2672_write_register(uint8_t addr, uint8_t val)
     i2c_write_blocking(i2c_default, MP2672_ADDR, data, 2, false);
 }
 
+static void sw_reset(void)
+{
+    uint8_t r;
+
+    // Reset chip
+    mp2672_write_register(MP2672_REG_TIMER_SETTINGS, 0x8);
+
+    // Wait for reset to complete 
+    do
+    {
+        r = mp2672_read_register(MP2672_REG_TIMER_SETTINGS);
+        sleep_ms(10);
+    } while(r & 0x8);
+}
+
 void mp2672_init(void)
 {
-    // Nothing to do yet...
+    sw_reset();
+
+    // Set charge current to 500mA (if Iset is 2A)
+    mp2672_write_register(MP2672_REG_BALANCE_CHARGE_SETTINGS, 0x80);
+
+    // Disable I2C watchdog to avoid resetting the registers after 60s
+    mp2672_write_register(MP2672_REG_TIMER_SETTINGS, 0x83);
+
+    // Disable charge by default
+    mp2672_enable_charge(false);
 }
 
 uint8_t mp2672_get_fault(void)
@@ -41,4 +66,30 @@ uint8_t mp2672_get_fault(void)
 uint8_t mp2672_get_status(void)
 {
     return mp2672_read_register(MP2672_REG_STATUS);
+}
+
+void mp2672_enable_charge(bool enable)
+{
+    #define CHARGE_ENABLE_BIT (1 << 4)
+
+    uint8_t settings = mp2672_read_register(MP2672_REG_BATT_SETTINGS);
+
+    if(enable)
+    {
+        settings |= CHARGE_ENABLE_BIT;
+    }
+    else
+    {
+        settings &= ~CHARGE_ENABLE_BIT;
+    }
+
+    mp2672_write_register(MP2672_REG_BATT_SETTINGS, settings);
+}
+
+void mp2672_get_regs(uint8_t *reg)
+{
+    for(uint8_t i = 0; i <= 4; i++)
+    {
+        reg[i] = mp2672_read_register(i);
+    }
 }

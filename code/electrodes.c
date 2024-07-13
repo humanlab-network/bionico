@@ -5,8 +5,8 @@ void electrodes_init(void)
 {
     adc_init();
 
-    adc_gpio_init(EL1_GPIO);
-    adc_gpio_init(EL2_GPIO);
+    adc_gpio_init(EL1_PIN);
+    adc_gpio_init(EL2_PIN);
 }
 
 void electrodes_read(float *el1, float *el2)

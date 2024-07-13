@@ -3,12 +3,12 @@
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
 #include "hardware/i2c.h"
+#include "ltc2943.h"
 #include "electrodes.h"
 #include "motor.h"
 #include "signal.h"
 #include "control_config.h"
 #include "thermal_model.h"
-#include "bq28z610-r1.h"
 
 #define LOG_LEVEL LOG_DEBUG
 #define NO_DEBUG_HEADER
@@ -133,36 +133,9 @@ void set_red_leds(bool on)
 }
 
 // ----- BRIGHT DIFFERENT LEDS DEPENDING ON BATTERY LEVEL ------
-void display_battery_level(float level)
+void display_battery_level(void)
 {
-    if (level > 0.75)
-    {
-        pwm_set_gpio_level(LED_PIN(1), LED_ON_PWM_GREEN);
-        pwm_set_gpio_level(LED_PIN(3), LED_ON_PWM_GREEN);
-        pwm_set_gpio_level(LED_PIN(5), LED_ON_PWM_GREEN);
-        pwm_set_gpio_level(LED_PIN(7), LED_ON_PWM_GREEN);
-    }
-    else if (level > 0.5)
-    {
-        pwm_set_gpio_level(LED_PIN(1), LED_OFF_PWM);
-        pwm_set_gpio_level(LED_PIN(3), LED_ON_PWM_GREEN);
-        pwm_set_gpio_level(LED_PIN(5), LED_ON_PWM_GREEN);
-        pwm_set_gpio_level(LED_PIN(7), LED_ON_PWM_GREEN);
-    }
-    else if (level > 0.25)
-    {
-        pwm_set_gpio_level(LED_PIN(1), LED_OFF_PWM);
-        pwm_set_gpio_level(LED_PIN(3), LED_OFF_PWM);
-        pwm_set_gpio_level(LED_PIN(5), LED_ON_PWM_GREEN);
-        pwm_set_gpio_level(LED_PIN(7), LED_ON_PWM_GREEN);
-    }
-    else
-    {
-        pwm_set_gpio_level(LED_PIN(1), LED_OFF_PWM);
-        pwm_set_gpio_level(LED_PIN(3), LED_OFF_PWM);
-        pwm_set_gpio_level(LED_PIN(5), LED_OFF_PWM);
-        pwm_set_gpio_level(LED_PIN(7), LED_ON_PWM_GREEN);
-    }
+    // TODO
 }
 
 // ----- STATE MACHINE THAT ENABLE MOTOR CUTOUT TO LIMIT HEAT INCREASE ------
@@ -282,12 +255,12 @@ int main(void)
     // Init hardware components
     motor_init();
     electrodes_init();
-    bq28z610_r1_init();
+    ltc2943_init();
 
     // Init filters
     electrodes_read(&emg_open_filtered, &emg_close_filtered);
     current_filtered = motor_read_current();
-    battery_voltage_raw = bq28z610_r1_get_voltage();
+    battery_voltage_raw = ltc2943_read_voltage();
     battery_voltage_highfreq_filtered = battery_voltage_raw;
     battery_voltage_lowfreq_filtered = battery_voltage_raw;
 
@@ -301,7 +274,7 @@ int main(void)
         // AnalogRead function may take some times !
         electrodes_read(&emg_open_raw, &emg_close_raw);
         current_raw = motor_read_current();
-        battery_voltage_raw = bq28z610_r1_get_voltage();
+        battery_voltage_raw = ltc2943_read_voltage();
 
         // ----- MEASURES FILTERING -----
         emg_open_filtered = first_order_filter(&emg_open_filtered, &emg_open_raw, EMG_ALPHA_FILTER);
@@ -368,8 +341,7 @@ int main(void)
         motor_set_command(pwm);
 
         // ----- BATTERY LEVEL DISPLAY -----
-        float battery_level = bq28z610_r1_get_remaining_capacity() / BATTERY_FULL_CAPACITY;
-        display_battery_level(battery_level);
+        display_battery_level();
 
         // ----- LOG DATA TO USB ------
 #ifdef LOG_TO_USB

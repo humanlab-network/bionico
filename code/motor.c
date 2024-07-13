@@ -4,6 +4,9 @@
 #include "hardware/adc.h"
 #include "motor.h"
 
+#define R      1200 // Ohm
+#define APROPI  450 // µA/A
+
 void motor_init()
 {
     // PWM configuration
@@ -12,21 +15,23 @@ void motor_init()
     pwm_config_set_wrap(&config, MAX_PWM); // Wrap is set to 100, meaning the PWM frequency is 33.25kHz
 
     // Direction pin configuration
-    gpio_init(IN1);
-    gpio_init(IN2);
-    gpio_set_dir(IN1, GPIO_OUT);
-    gpio_set_dir(IN2, GPIO_OUT);
+    gpio_init(nSLEEP_PIN);
+    gpio_init(nFAULT_PIN);
+    gpio_set_dir(nSLEEP_PIN, GPIO_OUT);
+    gpio_set_dir(nFAULT_PIN, GPIO_OUT);
+
+    // Enable motor
+    gpio_put(nSLEEP_PIN, 1);
 
     // PWM pin configuration
-    gpio_set_function(EN1, GPIO_FUNC_PWM);
-    gpio_set_function(EN2, GPIO_FUNC_PWM);
-    pwm_init(pwm_gpio_to_slice_num(EN1), &config, true);
-    pwm_init(pwm_gpio_to_slice_num(EN2), &config, true);
+    gpio_set_function(IN1_PIN, GPIO_FUNC_PWM);
+    gpio_set_function(IN2_PIN, GPIO_FUNC_PWM);
+    pwm_init(pwm_gpio_to_slice_num(IN1_PIN), &config, true);
+    pwm_init(pwm_gpio_to_slice_num(IN2_PIN), &config, true);
 
     // ADC configuration
     adc_init();
-    adc_gpio_init(CM1_GPIO);
-    adc_gpio_init(CM2_GPIO);
+    adc_gpio_init(CM_PIN);
 }
 
 void motor_set_command(int8_t pwm)
@@ -38,38 +43,24 @@ void motor_set_command(int8_t pwm)
     if (pwm > MAX_PWM)
         pwm = MAX_PWM;
 
-    // Set direction pins
-    gpio_put(IN1, dir ? 1 : 0);
-    gpio_put(IN2, dir ? 0 : 1);
-
     // Set PWM pins
-    pwm_set_gpio_level(EN1, dir ? pwm : MAX_PWM);
-    pwm_set_gpio_level(EN2, dir ? MAX_PWM : pwm);
+    pwm_set_gpio_level(IN1_PIN, dir ? pwm : 0);
+    pwm_set_gpio_level(IN2_PIN, dir ? 0 : pwm);
 }
 
 float motor_read_current(void)
 {
-    float curr_a, curr_b;
+    float curr;
 
     // Select first branch and read current value
-    adc_select_input(CM1_CHANNEL);
-    curr_a = adc_read();
-
-    // Select second branch and read current value
-    adc_select_input(CM2_CHANNEL);
-    curr_b = adc_read();
+    adc_select_input(CM_CHANNEL);
+    curr = adc_read();
 
     // Convert ADC value to volts
-    curr_a *= VREF / (1 << 12);
-    curr_b *= VREF / (1 << 12);
-
-    // Get value relative to middle point
-    curr_a -= VREF / 2;
-    curr_b -= VREF / 2;
+    curr *= VREF / (1 << 12);
 
     // Convert voltage to current
-    curr_a *= 10000 / R;
-    curr_b *= 10000 / R;
+    curr *= 1e6 / (APROPI * R);
 
-    return curr_a - curr_b;
+    return curr;
 }

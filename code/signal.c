@@ -1,5 +1,7 @@
 #include "signal.h"
 
+// TODO remove pointers
+
 float first_order_filter(float *prev_output, float *new_input, float alpha)
 {
     return (*new_input * alpha + *prev_output * (1.0 - alpha));

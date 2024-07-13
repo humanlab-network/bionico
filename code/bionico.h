@@ -1,34 +1,32 @@
 #ifndef _BIONICO_H
 #define _BIONICO_H
 
-// --- GPIO ---
-#define EN1 18
-#define EN2 24
-#define IN1 19
-#define IN2 25
+// --- MOTOR ---
+#define IN1_PIN 18
+#define IN2_PIN 19
+#define nSLEEP_PIN 20
+#define nFAULT_PIN 21
 
 // --- ADC ---
 #define VREF 3.3  // Volt
-#define CM1_GPIO 26
-#define CM1_CHANNEL 0
-#define CM2_GPIO 27
-#define CM2_CHANNEL 1
-#define EL1_GPIO 28 
+#define BAT_PIN 26
+#define BAT_CHANNEL 0
+#define CM_PIN 27
+#define CM_CHANNEL 1
+#define EL1_PIN 28 
 #define EL1_CHANNEL 2
-#define EL2_GPIO 29
+#define EL2_PIN 29
 #define EL2_CHANNEL 3
 
 // --- LEDs ---
 // Mapping:
-// LED0 -> GPIO0
-// LED1 -> GPIO1
-// LED2 -> GPIO2
-// LED3 -> GPIO3
-// LED4 -> GPIO8
-// LED5 -> GPIO9
-// LED6 -> GPIO10
-// LED7 -> GPIO11
-#define LED_PIN(i) (i <= 3 ? i : 8 + i - 4)
+// LED1 -> GPIO2
+// LED2 -> GPIO3
+#define LED_PIN(i) (i + 2)
+
+
+// --- VIBRATOR ---
+#define VIBRATOR_PIN 8
 
 // --- I2C ---
 #define PICO_DEFAULT_I2C           0

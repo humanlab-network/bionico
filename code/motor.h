@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 #define MAX_PWM 100
-#define R 5100 // Ohm
 
 void motor_init();
 
