@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "hardware/i2c.h"
+#include <hardware/gpio.h>
+#include <hardware/i2c.h>
 #include "mp2672.h"
 
 #define MP2672_ADDR 0x4B
@@ -48,6 +49,11 @@ void mp2672_init(void)
 {
     sw_reset();
 
+    // Initialize ACOK pin
+    gpio_init(AC_OK_PIN);
+    gpio_set_dir(AC_OK_PIN, GPIO_IN);
+    gpio_pull_up(AC_OK_PIN);
+
     // Set charge current to 500mA (if Iset is 2A)
     mp2672_write_register(MP2672_REG_BALANCE_CHARGE_SETTINGS, 0x80);
 
@@ -56,6 +62,11 @@ void mp2672_init(void)
 
     // Disable charge by default
     mp2672_enable_charge(false);
+}
+
+bool mp2672_is_ac_ok(void)
+{
+    return !gpio_get(AC_OK_PIN);
 }
 
 uint8_t mp2672_get_fault(void)

@@ -10,6 +10,7 @@ void monitor_charge(uint32_t sec)
     {
         float u = ltc2943_read_voltage();
         float i = ltc2943_read_current();
+        float q = ltc2943_read_charge();
         uint8_t regs[5];
         mp2672_get_regs(regs);
 
@@ -27,7 +28,7 @@ void monitor_charge(uint32_t sec)
         uint8_t therm_fault = (raw_fault >> 5) & 0x1;
         uint8_t ntc_fault = (raw_fault & 0x7);
 
-        printf("%f %f %d %d %d %d %d", u, i, status, batt_float, therm, therm_fault, ntc_fault);
+        printf("%f %f %f %d %d %d %d %d", u, i, q, status, batt_float, therm, therm_fault, ntc_fault);
 
         for(uint8_t i = 0; i < sizeof(regs); i++)
         {
@@ -57,7 +58,7 @@ int main(void)
     // Wait for serial console to be connected
     while(!stdio_usb_connected());
 
-    printf("# voltage current status battery_present thermal_regulation thermal_fault ntc_fault reg0 .. reg5\n");
+    printf("# voltage current charge status battery_present thermal_regulation thermal_fault ntc_fault reg0 .. reg5\n");
 
     while(true) 
     {
@@ -67,7 +68,7 @@ int main(void)
         
         mp2672_enable_charge(true);
         printf("# Charge enabled\n");
-        monitor_charge(30);
+        monitor_charge(120);
         
     }
 

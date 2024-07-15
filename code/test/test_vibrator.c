@@ -17,7 +17,7 @@ int main(void)
     while(true)
     {
         vibrator_set_value(sin[t % N]);
-        sleep_ms(100);
+        sleep_ms(300);
         t++;
     }
 

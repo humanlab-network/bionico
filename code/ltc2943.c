@@ -45,7 +45,7 @@ enum
     LTC2943_TEMP_THRES_LO
 };
 
-static uint8_t coulomb_prescaler = LTC2943_COULOMB_PRESCALER_4096;
+static uint16_t coulomb_prescaler = 4096;
 
 static uint8_t ltc2943_read_register_8(uint8_t addr)
 {
@@ -83,7 +83,7 @@ static void ltc2943_set_coulomb_prescaler(uint8_t p)
 {
     uint8_t c = ltc2943_read_register_8(LTC2943_CONTROL);
     ltc2943_write_register_8(LTC2943_CONTROL, (c & 0xC7) | p);
-    coulomb_prescaler = p;
+    coulomb_prescaler = 1 << (p >> 2);
 }
 
 void ltc2943_init(void)
@@ -105,4 +105,18 @@ float ltc2943_read_current(void)
     uint16_t r = ltc2943_read_register_16(LTC2943_CURRENT_MSB);
 
     return 60e-3 / RSENSE * (r - 32767) / 32767;
+}
+
+float ltc2943_read_temperature(void)
+{
+    uint16_t r = ltc2943_read_register_16(LTC2943_TEMP_MSB);
+
+    return 510. * r / 65535. - 273.15; 
+}
+
+float ltc2943_read_charge(void)
+{
+    uint16_t r = ltc2943_read_register_16(LTC2943_ACC_CHRG_MSB);
+    float q_lsb = 0.34 * 0.05 / RSENSE * coulomb_prescaler / 4096.;
+    return q_lsb * r;
 }

@@ -10,4 +10,6 @@ void mp2672_enable_charge(bool enable);
 
 void mp2672_get_regs(uint8_t *reg);
 
+bool mp2672_is_ac_ok(void);
+
 #endif

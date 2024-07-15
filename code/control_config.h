@@ -1,6 +1,15 @@
 #ifndef _CONTROL_CONFIG_H_
 #define _CONTROL_CONFIG_H_
 
+#define CURRENT_MONITORING_ACTIVATED
+// #define TEMP_SECURITY_ACTIVATED
+//#define VOLTAGE_SECURITY_ACTIVATED
+// #define USE_VIRTUAL_MOTOR_RESISTANCE
+
+/* --- DIRECTION --- */
+#define DIR_OPEN -1
+#define DIR_CLOSE 1
+
 /* --- PERIOD CONFIGURATION--- */
 // [us], Sampling period in microseconds
 #define PERIOD_US 10000
@@ -77,8 +86,8 @@
 #define VIRTUAL_R_MOT (7.8 / VIRTUAL_STALL_CURRENT)
 // [A], Minimum voltage of battery authorized to protect the battery
 #define MIN_VOLTAGE 7.0
-// [Ah], Full capacity of the battery
-#define BATTERY_FULL_CAPACITY 3.0
+// [mAh], Full capacity of the battery
+#define BATTERY_FULL_CAPACITY 1130.0
 
 /* --- MOTOR THERMAL MODEL --- */
 // [°C], Estimation of outside temperature

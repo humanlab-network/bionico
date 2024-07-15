@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <hardware/gpio.h>
-#include "hardware/pwm.h"
-#include "hardware/adc.h"
+#include <hardware/pwm.h>
+#include <hardware/adc.h>
 #include "motor.h"
 
 #define R      1200 // Ohm

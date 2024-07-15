@@ -7,5 +7,8 @@ void ltc2943_init(void);
 
 float ltc2943_read_voltage(void);
 float ltc2943_read_current(void);
+float ltc2943_read_temperature(void);
+
+float ltc2943_read_charge(void);
 
 #endif

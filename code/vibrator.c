@@ -10,7 +10,7 @@ void vibrator_init(void)
     
     gpio_set_function(VIBRATOR_PIN, GPIO_FUNC_PWM);
     pwm_init(pwm_gpio_to_slice_num(VIBRATOR_PIN), &config, true);
-    pwm_set_gpio_level(VIBRATOR_PIN, 1000);
+    pwm_set_gpio_level(VIBRATOR_PIN, 0);
 }
 
 void vibrator_set_value(uint16_t vib)
