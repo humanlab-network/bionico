@@ -23,8 +23,13 @@ target_link_libraries(test_ltc2943 ltc2943 pico_stdlib)
 pico_enable_stdio_usb(test_ltc2943 1)
 pico_add_extra_outputs(test_ltc2943)
 
+add_executable(test_ac_ok test_ac_ok.c)
+target_link_libraries(test_ac_ok mp2672 led pico_stdlib)
+pico_enable_stdio_usb(test_ac_ok 1)
+pico_add_extra_outputs(test_ac_ok)
+
 add_executable(test_charge test_charge.c)
-target_link_libraries(test_charge ltc2943 mp2672 pico_stdlib)
+target_link_libraries(test_charge ltc2943 mp2672 motor pico_stdlib)
 pico_enable_stdio_usb(test_charge 1)
 pico_add_extra_outputs(test_charge)
 

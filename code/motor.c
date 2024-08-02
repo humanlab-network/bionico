@@ -18,7 +18,7 @@ void motor_init()
     gpio_init(nSLEEP_PIN);
     gpio_init(nFAULT_PIN);
     gpio_set_dir(nSLEEP_PIN, GPIO_OUT);
-    gpio_set_dir(nFAULT_PIN, GPIO_OUT);
+    gpio_set_dir(nFAULT_PIN, GPIO_IN);
 
     // Enable motor
     gpio_put(nSLEEP_PIN, 1);

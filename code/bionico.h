@@ -2,19 +2,17 @@
 #define _BIONICO_H
 
 // --- MOTOR ---
-#define IN1_PIN 18
-#define IN2_PIN 19
-#define nSLEEP_PIN 20
-#define nFAULT_PIN 21
+#define IN1_PIN 21
+#define IN2_PIN 20
+#define nSLEEP_PIN 19
+#define nFAULT_PIN 18
 
 // --- BATTERY CHARGER ---
-#define AC_OK_PIN 0
-#define STAT_PIN 1
+#define AC_OK_PIN 24
+#define STAT_PIN 25
 
 // --- ADC ---
 #define VREF 3.3 // Volt
-#define BAT_PIN 26
-#define BAT_CHANNEL 0
 #define CM_PIN 27
 #define CM_CHANNEL 1
 #define EL1_PIN 28
@@ -24,9 +22,9 @@
 
 // --- LEDs ---
 // Mapping:
-// LED1 -> GPIO2
-// LED2 -> GPIO3
-#define LED_PIN(i) (i + 2)
+// LED1 -> GPIO0
+// LED2 -> GPIO1
+#define LED_PIN(i) (i)
 
 // --- VIBRATOR ---
 #define VIBRATOR_PIN 8

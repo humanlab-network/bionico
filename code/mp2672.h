@@ -2,6 +2,7 @@
 #define MP2672_H_
 
 void mp2672_init(void);
+void mp2672_configure(void);
 
 uint8_t mp2672_get_fault(void);
 uint8_t mp2672_get_status(void);

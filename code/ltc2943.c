@@ -88,9 +88,9 @@ static void ltc2943_set_coulomb_prescaler(uint8_t p)
 
 void ltc2943_init(void)
 {
-    ltc2943_set_coulomb_prescaler(LTC2943_COULOMB_PRESCALER_4096);
-
     ltc2943_write_register_8(LTC2943_CONTROL, 0xC0);
+
+    ltc2943_set_coulomb_prescaler(LTC2943_COULOMB_PRESCALER_64);
 }
 
 float ltc2943_read_voltage(void)
@@ -119,4 +119,16 @@ float ltc2943_read_charge(void)
     uint16_t r = ltc2943_read_register_16(LTC2943_ACC_CHRG_MSB);
     float q_lsb = 0.34 * 0.05 / RSENSE * coulomb_prescaler / 4096.;
     return q_lsb * r;
+}
+
+void ltc2943_set_charge(float charge)
+{
+    float q_lsb = 0.34 * 0.05 / RSENSE * coulomb_prescaler / 4096.;
+
+    ltc2943_write_register_16(LTC2943_ACC_CHRG_MSB, (uint16_t)(charge / q_lsb));
+}
+
+uint8_t ltc2943_read_status(void)
+{
+    return ltc2943_read_register_8(LTC2943_STATUS);
 }

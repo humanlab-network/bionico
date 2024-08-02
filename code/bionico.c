@@ -14,11 +14,12 @@
 #include "command.h"
 #include "control_config.h"
 
-#define LED_RED LED1_ON
-#define LED_GREEN LED2_ON
+#define LED_GREEN LED1_ON
+#define LED_RED LED2_ON
 
-#define LOG_TO_USB
+//#define LOG_TO_USB
 //#define WAIT_FOR_USB
+#define DEACTIVATE_VIBRATOR
 
 // Measurements
 float emg_open_raw, emg_open_filtered;
@@ -105,6 +106,9 @@ void motor_state_machine(void)
 
 void init(void)
 {
+    // Wait before start in case power is not completely stable
+    sleep_ms(100);
+
     // Init stdio
     stdio_init_all();
 
@@ -121,9 +125,8 @@ void init(void)
     motor_init();
     electrodes_init();
     ltc2943_init();
-    // TODO: investigate why chip does not respond unless VIN is plugged
-    //mp2672_init();
     vibrator_init();
+    mp2672_init();
 
     gpio_init(EMG_INVERTER_PIN);
     gpio_set_dir(EMG_INVERTER_PIN, GPIO_IN);
@@ -219,40 +222,58 @@ void vibration(float current)
         return;
     }
 
+#ifndef DEACTIVATE_VIBRATOR
     vibrator_set_value((uint16_t)(1000 * (saturate(current, VIB_THRESHOLD, SAFE_CURRENT) - VIB_THRESHOLD) / (SAFE_CURRENT - VIB_THRESHOLD)));
+#else
+    vibrator_set_value(0);
+#endif
 }
 
 void stop_while_charging(void)
 {
     static bool blink = true;
+    static bool mp2672_is_initialized = false;
 
-    while (mp2672_is_ac_ok())
+    while(mp2672_is_ac_ok())
     {
+        // Do not try to initialize the MP2672 charger until AC is OK for the first time, the chip won't answer
+        if(!mp2672_is_initialized)
+        {
+            mp2672_configure();
+            
+            // Enable charger
+            mp2672_enable_charge(true);
+            mp2672_is_initialized = true;
+        }
+
         uint8_t s = (mp2672_get_status() >> 4) & 0x3;
 
         switch (s)
         {
-        case 0:
-            // Not charging
-            led_set_state(LED_RED);
-            break;
+            case 0:
+                // Not charging
+                led_set_state(LED_RED);
+                break;
 
-        case 1:
-        case 2:
-            // Charging or pre-charging
-            led_set_state(blink ? LED_GREEN : LEDS_OFF);
-            blink = !blink;
-            break;
+            case 1:
+            case 2:
+                // Charging or pre-charging
+                led_set_state(blink ? LED_GREEN : LEDS_OFF);
+                blink = !blink;
+                break;
 
-        case 3:
-            // Fully charged
-            led_set_state(LED_GREEN);
-            break;
+            case 3:
+                // Fully charged, reset battery gauge
+                led_set_state(LED_GREEN);
+                ltc2943_set_charge(BATTERY_FULL_CAPACITY);
+                break;
         }
 
         motor_set_command(0);
         sleep_ms(1000);
     }
+
+    led_set_state(LEDS_OFF);
 }
 
 int main(void)

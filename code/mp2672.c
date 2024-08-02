@@ -47,15 +47,18 @@ static void sw_reset(void)
 
 void mp2672_init(void)
 {
-    sw_reset();
-
     // Initialize ACOK pin
     gpio_init(AC_OK_PIN);
     gpio_set_dir(AC_OK_PIN, GPIO_IN);
     gpio_pull_up(AC_OK_PIN);
+}
 
-    // Set charge current to 500mA (if Iset is 2A)
-    mp2672_write_register(MP2672_REG_BALANCE_CHARGE_SETTINGS, 0x80);
+void mp2672_configure(void)
+{
+    sw_reset();
+
+    // Set charge current to 500mA (if Iset is 500mA)
+    mp2672_write_register(MP2672_REG_BALANCE_CHARGE_SETTINGS, 0x8F);
 
     // Disable I2C watchdog to avoid resetting the registers after 60s
     mp2672_write_register(MP2672_REG_TIMER_SETTINGS, 0x83);

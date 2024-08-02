@@ -10,5 +10,8 @@ float ltc2943_read_current(void);
 float ltc2943_read_temperature(void);
 
 float ltc2943_read_charge(void);
+void ltc2943_set_charge(float charge);
+
+uint8_t ltc2943_read_status(void);
 
 #endif

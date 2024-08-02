@@ -2,6 +2,7 @@
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
 #include "mp2672.h"
+#include "led.h"
 
 int main(void)
 {
@@ -14,18 +15,12 @@ int main(void)
     gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
     gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
     
-    // Wait for serial console to be connected
-    while(!stdio_usb_connected());
-
+    led_init();
     mp2672_init();
-    mp2672_configure();
 
     while(1)
     {
-        printf("Fault: %02X\n", mp2672_get_fault());
-        printf("Status: %02X\n", mp2672_get_status());
-        printf("\n");
-        sleep_ms(1000);
+        led_set_state(mp2672_is_ac_ok()?LED2_ON:LED1_ON);
     }
 
     return 0;
