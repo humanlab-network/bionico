@@ -1,3 +1,21 @@
+/*
+ * Bionico code is the firmware source code embedded in the electronic board
+ * dedicated to the prothestic hand [bionicohand](https://bionico.org/)
+ * Copyright 2024 INRIA
+ * Contributors: see AUTHORS file
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 #include <stdio.h>
 #include <math.h>
 #include "pico/stdlib.h"
@@ -17,8 +35,8 @@
 #define LED_GREEN LED1_ON
 #define LED_RED LED2_ON
 
-//#define LOG_TO_USB
-//#define WAIT_FOR_USB
+// #define LOG_TO_USB
+// #define WAIT_FOR_USB
 #define DEACTIVATE_VIBRATOR
 
 // Measurements
@@ -214,7 +232,7 @@ void stall_torque_monitoring(void)
 
 void vibration(float current)
 {
-    #define VIB_THRESHOLD (SAFE_CURRENT * 0.4)
+#define VIB_THRESHOLD (SAFE_CURRENT * 0.4)
 
     if (current < VIB_THRESHOLD)
     {
@@ -234,13 +252,13 @@ void stop_while_charging(void)
     static bool blink = true;
     static bool mp2672_is_initialized = false;
 
-    while(mp2672_is_ac_ok())
+    while (mp2672_is_ac_ok())
     {
         // Do not try to initialize the MP2672 charger until AC is OK for the first time, the chip won't answer
-        if(!mp2672_is_initialized)
+        if (!mp2672_is_initialized)
         {
             mp2672_configure();
-            
+
             // Enable charger
             mp2672_enable_charge(true);
             mp2672_is_initialized = true;
@@ -250,23 +268,23 @@ void stop_while_charging(void)
 
         switch (s)
         {
-            case 0:
-                // Not charging
-                led_set_state(LED_RED);
-                break;
+        case 0:
+            // Not charging
+            led_set_state(LED_RED);
+            break;
 
-            case 1:
-            case 2:
-                // Charging or pre-charging
-                led_set_state(blink ? LED_GREEN : LEDS_OFF);
-                blink = !blink;
-                break;
+        case 1:
+        case 2:
+            // Charging or pre-charging
+            led_set_state(blink ? LED_GREEN : LEDS_OFF);
+            blink = !blink;
+            break;
 
-            case 3:
-                // Fully charged, reset battery gauge
-                led_set_state(LED_GREEN);
-                ltc2943_set_charge(BATTERY_FULL_CAPACITY);
-                break;
+        case 3:
+            // Fully charged, reset battery gauge
+            led_set_state(LED_GREEN);
+            ltc2943_set_charge(BATTERY_FULL_CAPACITY);
+            break;
         }
 
         motor_set_command(0);
