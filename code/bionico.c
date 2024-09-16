@@ -37,7 +37,7 @@
 
 // #define LOG_TO_USB
 // #define WAIT_FOR_USB
-#define DEACTIVATE_VIBRATOR
+// #define DEACTIVATE_VIBRATOR
 
 // Measurements
 float emg_open_raw, emg_open_filtered;

@@ -55,9 +55,24 @@ cmake ..
 make
 ```
 
+### A controller view
+
+The two images below, give two different views of the location of:
+* the connectors (in red): USB, motor, batteries, 2 EMG and 1 vibrator
+* the LED
+* the switches: on/off and the motor rotation direction mode
+
+![image](img/bionico_enclosure_view1.png)
+
+![image](img/bionico_enclosure_view2.png)
+
 ### How to flash the firmware
 
-_TODO_
+* connect your PC to the controller
+* keep pressing on `bootsel`, press on `reset`
+* the controller will be recognized as a USB storage device
+* copy the file `code/build/bionico.uf2` on the root of this USB storage device
+* the firmware is now flashed
 
 ### How to use the controller
 
