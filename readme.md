@@ -29,6 +29,16 @@ The microcontroller at the base of this board is a [rp2040](https://datasheets.r
 * two leds and two switchs management
 * usb communication 
 
+
+| Electronic schematics    |  (click to zoom)         | 
+|----------|:-------------:|
+| ![root schematic](img/schema_root.png) |  ![electrodes schematic](img/schema_electrodes.png) | 
+| ![power schematic](img/schema_power.png) | ![motor schematic](img/schema_motor.png) |
+
+**The electronic board and its enclosure**
+
+![image](img/bionico_enclosure_open2.jpeg)
+
 ## Firmware source code
 
 ### Code compilation on ubuntu
@@ -115,7 +125,13 @@ _TO BE COMPLETED_
   * __debug.h__: debug format for different levels
   * __control_config.h__: parameters for timing, emg, filtering, command signal, control algo., motor thermal limits, motor characteristics, led
   * __plot_charge.gnu__: gnuplot configuration to plot debug logs battery capacity
- 
+
+### Final integration
+
+Final integration in a prosthesis insert:
+
+![final integration](./img/bionico_socket.jpeg)
+
 ### Licences
 
 #### Hardware - elec/ & enclosure/
@@ -123,6 +139,7 @@ _TO BE COMPLETED_
 [Bionico control board](https://github.com/humanlab-network/bionico)  copyright 2024 by [Christophe Braillon](mailto:christophe.braillon@inria.fr) / [Handitechlab Inria](https://project.inria.fr/handitechlabinria/fr/) is licensed under  Attribution-NonCommercial-ShareAlike 4.0 International [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ![logo cc by-nc-sa](./elec/cc_by-nc-sa.png)
+
 
 #### Software - code/
 
