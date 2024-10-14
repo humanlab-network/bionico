@@ -232,7 +232,7 @@ void stall_torque_monitoring(void)
 
 void vibration(float current)
 {
-#define VIB_THRESHOLD (SAFE_CURRENT * 0.4)
+#define VIB_THRESHOLD (SAFE_CURRENT * 0.1)
 
     if (current < VIB_THRESHOLD)
     {
